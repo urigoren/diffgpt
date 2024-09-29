@@ -14,13 +14,13 @@ require_once 'config.php';
 		<div class="row">
 			<div class="col-12">
 				<h1 class="h1">Review my email</h1>
-				<p>Write your email below and click "Rephrase" to get a better version of it.</p>
+				<p>Write your email below and click "Review" to get a few suggestions from our AI.</p>
 			</div>
 			<div class="col-12">
 				<textarea id="original" class="form-control" rows="10">
 Sorry Friday won't work for me, next week?
 				</textarea>
-				<button onclick="paraphrase()" class="btn btn-primary">Rephrase (ctrl+enter)</button>
+				<button onclick="paraphrase()" class="btn btn-primary">Review (ctrl+enter)</button>
 				<button onclick="copy()" class="btn btn-info">Copy</button>
 				<button onclick="reset()" class="btn btn-secondary">Reset</button>
 			</div>
@@ -86,7 +86,12 @@ function showDiff(original,modified,result) {
 
 function paraphrase() {
     const formData = new FormData();
-    formData.append('txt', original.value);
+	let origVal = original.value;
+	origVal = origVal.replace(
+        /(?<![A-Z][a-z]|\d)([.!?])\s+(?=[A-Z]|["""']|$)/g,
+        "$1\n"
+    );
+    formData.append('txt', origVal);
 
     fetch('openai.php', {
         method: 'POST',
@@ -94,12 +99,15 @@ function paraphrase() {
     })
     .then(response => response.json())
     .then(data => {
-        suggestion = data;
+        suggestion = data.map(x=>x.replace(
+			/(?<![A-Z][a-z]|\d)([.!?])\s+(?=[A-Z]|["""']|$)/g,
+			"$1\n"
+		));
 		for (let i = 0; i < suggestion.length; i++) {
 			showDiff(original.value, suggestion[i], results[i]);
 			results[i].appendChild(document.createElement('br'));
 			const acceptButton = document.createElement('button');
-			acceptButton.textContent = 'Accept (ctrl+'+(1+i)+')';
+			acceptButton.textContent = 'Accept Change(ctrl+'+(1+i)+')';
 			acceptButton.className = 'btn btn-success';
 			acceptButton.onclick = () => accept(suggestion[i]);
 			results[i].appendChild(acceptButton);
