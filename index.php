@@ -94,12 +94,12 @@ function paraphrase() {
     })
     .then(response => response.json())
     .then(data => {
-        const suggestion = data;
+        suggestion = data;
 		for (let i = 0; i < suggestion.length; i++) {
 			showDiff(original.value, suggestion[i], results[i]);
 			results[i].appendChild(document.createElement('br'));
 			const acceptButton = document.createElement('button');
-			acceptButton.textContent = 'Accept';
+			acceptButton.textContent = 'Accept (ctrl+'+(1+i)+')';
 			acceptButton.className = 'btn btn-success';
 			acceptButton.onclick = () => accept(suggestion[i]);
 			results[i].appendChild(acceptButton);
@@ -129,12 +129,22 @@ function accept(txt) {
 	}
 }
 
+let suggestion = [];
+
 document.getElementById('original').addEventListener('keydown', function(event) {
     // Check if Ctrl (or Cmd on Mac) + Enter was pressed
     if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
         event.preventDefault();
         paraphrase();
     }
+<?php
+for ($i = 0; $i < NUM_SUGGESTIONS; $i++) {
+	echo "if ((event.ctrlKey || event.metaKey) && event.key === '".(1+$i)."') {";
+	echo "event.preventDefault();"
+	echo "accept(suggestion[$i]);"
+	echo "}"
+}
+?>
 });
 </script>
 </body>
