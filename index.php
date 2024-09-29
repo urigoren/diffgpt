@@ -119,6 +119,7 @@ function paraphrase() {
 }
 
 function reset() {
+	changelog.push(original.value);
 	original.value = '';
 	for (let i = 0; i < <?php echo NUM_SUGGESTIONS; ?>; i++) {
 		results[i].textContent = '';
@@ -131,18 +132,35 @@ function copy() {
 }
 
 function accept(txt) {
+	changelog.push(original.value);
 	original.value = txt;
 	for (let i = 0; i < <?php echo NUM_SUGGESTIONS; ?>; i++) {
 		results[i].textContent = '';
 	}
+	
+}
+
+function undo() {
+	if(changelog.length<=0) {
+		return;
+	}
+	original.value = changelog.pop();
 }
 
 let suggestion = [];
+let changelog = [];
 
 document.getElementById('original').addEventListener('keydown', function(event) {
     if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
         event.preventDefault();
         paraphrase();
+    }
+    if ((event.ctrlKey || event.metaKey) && ((event.key === 'z') || (event.key === 'Z'))) {
+        event.preventDefault();
+        undo();
+    }
+    if (event.key === 'Enter' || event.key === 'Delete' || event.key === 'Backspace') {
+		changelog.push(original.value);
     }
     if ((event.ctrlKey || event.metaKey) && event.key === '0') {
         event.preventDefault();
