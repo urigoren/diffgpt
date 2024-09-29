@@ -20,7 +20,7 @@ function paraphrase($txt) {
             ],
             [
                 'role' => 'user',
-                'content' => 'Please paraphrases this email in a positive, professional and business friendly tone, as an American speaker would write it: \n'.$txt
+                'content' => 'Please paraphrases this email in a positive, professional and business friendly tone, as an American speaker would write it. Please do not suggest email subject line or signature, just the body of the email and try to keep the same meaning as the original email: \n'.$txt
             ]
         ]    
     ];

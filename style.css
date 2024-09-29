@@ -39,6 +39,8 @@ del {
 	text-decoration: none;
 	color: #b30000;
 	background: #fadad7;
+	text-decoration: line-through;
+
 }
 ins {
 	background: #eaf2c2;
@@ -61,9 +63,6 @@ ins {
 	right: 5px;
 	height: 2em;
 	line-height: 2em;
-}
-#settings label {
-	margin-left: 1em;
 }
 
 .source {
