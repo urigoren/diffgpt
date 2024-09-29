@@ -1,50 +1,7 @@
 <?php
-require 'config.php';
-
-function paraphrase($txt){
-	$data = [
-		'model' => 'gpt-3.5-turbo',
-		'temperature' => 0.7,
-		'n' => 5,
-		'messages' => [	
-					[
-						'role' => 'system',
-						'content' => 'You are a helpful assistant that paraphrases the user\'s email in a positive, professional and business friendly tone.'
-					],
-					[
-						'role' => 'user',
-						'content' => $txt
-					]
-				]	
-			];
-	$ch = curl_init('https://api.openai.com/v1/chat/completions');
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-	'Authorization: Bearer ' . OPENAI_API_KEY,
-	'Content-Type: application/json'
-	));
-	curl_setopt($ch, CURLOPT_POST, 1);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-	$response = curl_exec($ch);
-	curl_close($ch);
-	if ($response === false) {
-		echo 'Error: ' . curl_error($ch);
-	} else {
-		$decodedResponse = json_decode($response, true);
-		if ( !array_key_exists('error', $decodedResponse) ){
-			$decodedResponse = json_decode($decodedResponse['choices'][0]['message']['content']);
-			}
-	}
-	return $decodedResponse;
-	}
-
-// parse json request
-$request = json_decode(file_get_contents('php://input'), true);
-// get user text from json request
-$userText = $request['txt'];
-
-//if no user text, redirect to index.html
-if (!$userText) {?><!DOCTYPE html>
+require_once 'config.php';
+?>
+<!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8">
@@ -53,26 +10,34 @@ if (!$userText) {?><!DOCTYPE html>
 </head>
 <body>
 
-
+<div contenteditable="true" id="original">restaurant</div>
+<button onclick="paraphrase()">Paraphrase</button>
+<br />
 <table>
 	<tr>
-		<td><div contenteditable="true" id="a">restaurant</div></td>
-		<td><div contenteditable="true" id="b">aura</td>
-		<td><div><pre id="result"></pre></div></td>
+		<?php
+		for ($i = 0; $i < NUM_SUGGESTIONS; $i++) {
+			echo '<td><div><pre id="result'.$i.'"></pre></div></td>';
+		}
+		?>
 	</tr>
 </table>
-<button onclick="paraphrase()">Paraphrase</button>
 
 <script src="diff.js"></script>
 <script defer>
-var a = document.getElementById('a');
-var b = document.getElementById('b');
-var result = document.getElementById('result');
+var original = document.getElementById('original');
+let results = [];
+<?php
+for ($i = 0; $i < NUM_SUGGESTIONS; $i++) {
+	echo 'results['.$i.'] = document.getElementById("result'.$i.'");';
+}
+?>
 
-function changed() {
+
+function showDiff(original,modified,result) {
 	var fragment = document.createDocumentFragment();
 	var diff;
-	diff = Diff["diffWords"](a.textContent, b.textContent);
+	diff = Diff["diffWords"](original, modified);
 
 	for (var i=0; i < diff.length; i++) {
 
@@ -104,31 +69,25 @@ function changed() {
 }
 
 function paraphrase() {
-	fetch('index.php', {
-		method: 'POST',
-		body: JSON.stringify({ txt: a.textContent })
-	}).then(response => response.json()).then(data => {
-		b.textContent = data.choices[0].message.content;
-		changed();
-	});
-}
-a.onpaste = a.onchange =
-b.onpaste = b.onchange = changed;
+    const formData = new FormData();
+    formData.append('txt', original.textContent);
 
-if ('oninput' in a) {
-	a.oninput = b.oninput = changed;
-} else {
-	a.onkeyup = b.onkeyup = changed;
+    fetch('openai.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        const suggestion = data;
+		for (let i = 0; i < suggestion.length; i++) {
+			showDiff(original.textContent, suggestion[i], results[i]);
+		}
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 }
+
 </script>
 </body>
 </html>
-<?php
-} else {
-
-	$response = paraphrase($userText);
-	
-	// print the response
-	echo json_encode($response);
-}
-?>
