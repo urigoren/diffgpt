@@ -1,4 +1,5 @@
 # DiffGPT
+![Screenshot](https://github.com/urigoren/diffgpt/blob/master/screenshot.png?raw=true)
 ## Write emails like you write code
 DiffGPT is a git inspired UI to show you the edits that ChatGPT suggests.
 
