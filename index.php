@@ -129,6 +129,13 @@ function accept(txt) {
 	}
 }
 
+document.getElementById('original').addEventListener('keydown', function(event) {
+    // Check if Ctrl (or Cmd on Mac) + Enter was pressed
+    if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+        event.preventDefault();
+        paraphrase();
+    }
+});
 </script>
 </body>
 </html>
