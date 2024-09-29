@@ -1,0 +1,3 @@
+<?php
+const OPENAI_API_KEY =  "";
+const NUM_SUGGESTIONS = 4;
