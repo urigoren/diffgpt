@@ -1,10 +1,7 @@
 <?php
 require_once 'config.php';
-//show all errors
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-function paraphrase($txt) {
+
+function complete($txt, $prompt) {
     if (!defined('OPENAI_API_KEY')) {
         throw new Exception('OPENAI_API_KEY is not defined');
     }
@@ -20,7 +17,7 @@ function paraphrase($txt) {
             ],
             [
                 'role' => 'user',
-                'content' => 'Please paraphrases this email in a positive, professional and business friendly tone, as an American speaker would write it: \n'.$txt
+                'content' => $prompt.'\n'.$txt
             ]
         ]    
     ];
@@ -49,13 +46,36 @@ function paraphrase($txt) {
     if (isset($decodedResponse['error'])) {
         throw new Exception('API Error: ' . $decodedResponse['error']['message']);
     }
+
+    return $decodedResponse;
+}
+
+function paraphrase_entire_email($txt) {
     
-    if (!isset($decodedResponse['choices'][0]['message']['content'])) {
+    $res = complete($txt, 'The following is an email draft about to be sent in a business setting.\nPlease paraphrases this email in a positive, professional and business friendly tone, as an American speaker would write it:');
+
+    if (!isset($res['choices'][0]['message']['content'])) {
         throw new Exception('Unexpected API response format');
     }
 
     $ret = array();
-    foreach ($decodedResponse['choices'] as $choice) {
+    foreach ($res['choices'] as $choice) {
+        $ret[] = $choice['message']['content'];
+    }
+
+    return $ret;
+}
+
+function paraphrase_sentence($txt) {
+    
+    $res = complete($txt, 'Given the following sentence, Please make sure its grammatically correct with no spelling mistakes. Suggest minor edits that preserve the meaning of the sentence but make it more positive and business friendly:');
+
+    if (!isset($res['choices'][0]['message']['content'])) {
+        throw new Exception('Unexpected API response format');
+    }
+
+    $ret = array();
+    foreach ($res['choices'] as $choice) {
         $ret[] = $choice['message']['content'];
     }
 
@@ -64,9 +84,20 @@ function paraphrase($txt) {
 
 
 $userText = $_POST['txt'];
+$mode = $_POST['mode'] ?? 'email';
 
 try {
-    $paraphrasedText = paraphrase($userText);
+    if ($mode=='email')
+    {
+        $paraphrasedText = paraphrase_entire_email($userText);
+    }
+    if ($mode=='sentence')
+    {
+        $paraphrasedText = paraphrase_sentence($userText);
+    }
+    else {
+        echo '{"error": "' .$mode.' is an unknown mode"}';    
+    }
     echo json_encode($paraphrasedText);
 } catch (Exception $e) {
     echo '{"error": "' . $e->getMessage() . '"}';

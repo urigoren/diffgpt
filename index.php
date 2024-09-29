@@ -92,6 +92,7 @@ function paraphrase() {
         "$1\n"
     );
     formData.append('txt', origVal);
+	formData.append('mode', 'email');
 
     fetch('openai.php', {
         method: 'POST',
