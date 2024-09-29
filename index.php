@@ -13,14 +13,14 @@ require_once 'config.php';
 	<div class="container">
 		<div class="row">
 			<div class="col-12">
-				<h1>Review my email</h1>
+				<h1 class="h1">Review my email</h1>
 				<p>Write your email below and click "Rephrase" to get a better version of it.</p>
 			</div>
 			<div class="col-12">
 				<textarea id="original" class="form-control" rows="10">
 Sorry Friday won't work for me, next week?
 				</textarea>
-				<button onclick="paraphrase()" class="btn btn-primary">Rephrase</button>
+				<button onclick="paraphrase()" class="btn btn-primary">Rephrase (ctrl+enter)</button>
 				<button onclick="copy()" class="btn btn-info">Copy</button>
 				<button onclick="reset()" class="btn btn-secondary">Reset</button>
 			</div>
@@ -132,17 +132,20 @@ function accept(txt) {
 let suggestion = [];
 
 document.getElementById('original').addEventListener('keydown', function(event) {
-    // Check if Ctrl (or Cmd on Mac) + Enter was pressed
     if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
         event.preventDefault();
         paraphrase();
     }
+    if ((event.ctrlKey || event.metaKey) && event.key === '0') {
+        event.preventDefault();
+        reset();
+    }
 <?php
 for ($i = 0; $i < NUM_SUGGESTIONS; $i++) {
 	echo "if ((event.ctrlKey || event.metaKey) && event.key === '".(1+$i)."') {";
-	echo "event.preventDefault();"
-	echo "accept(suggestion[$i]);"
-	echo "}"
+	echo "event.preventDefault();";
+	echo "accept(suggestion[$i]);";
+	echo "}";
 }
 ?>
 });
