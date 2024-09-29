@@ -91,7 +91,7 @@ try {
     {
         $paraphrasedText = paraphrase_entire_email($userText);
     }
-    if ($mode=='sentence')
+    elseif ($mode=='sentence')
     {
         $paraphrasedText = paraphrase_sentence($userText);
     }

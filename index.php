@@ -49,6 +49,22 @@ for ($i = 0; $i < NUM_SUGGESTIONS; $i++) {
 }
 ?>
 
+function replaceSelectedText(textarea, newText) {
+    // Get the current selection
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+
+	if (start>=end) {
+		return;
+	}
+
+    const currentText = textarea.value;
+    
+    const updatedText = currentText.substring(0, start) + newText + currentText.substring(end);
+    
+    textarea.value = updatedText;
+    textarea.setSelectionRange(start + newText.length, start + newText.length);
+}
 
 function showDiff(original,modified,result) {
 	var fragment = document.createDocumentFragment();
@@ -87,12 +103,18 @@ function showDiff(original,modified,result) {
 function paraphrase() {
     const formData = new FormData();
 	let origVal = original.value;
-	origVal = origVal.replace(
-        /(?<![A-Z][a-z]|\d)([.!?])\s+(?=[A-Z]|["""']|$)/g,
-        "$1\n"
-    );
-    formData.append('txt', origVal);
-	formData.append('mode', 'email');
+	if (original.selectionStart<original.selectionEnd) {
+		origVal = origVal.substring(original.selectionStart,original.selectionEnd);
+		formData.append('txt', origVal);
+		formData.append('mode', 'sentence');
+	} else {
+		origVal = origVal.replace(
+			/(?<![A-Z][a-z]|\d)([.!?])\s+(?=[A-Z]|["""']|$)/g,
+			"$1\n"
+		);
+		formData.append('txt', origVal);
+		formData.append('mode', 'email');
+	}
 
     fetch('openai.php', {
         method: 'POST',
@@ -105,7 +127,7 @@ function paraphrase() {
 			"$1\n"
 		));
 		for (let i = 0; i < suggestion.length; i++) {
-			showDiff(original.value, suggestion[i], results[i]);
+			showDiff(origVal, suggestion[i], results[i]);
 			results[i].appendChild(document.createElement('br'));
 			const acceptButton = document.createElement('button');
 			acceptButton.textContent = 'Accept Change(ctrl+'+(1+i)+')';
@@ -134,7 +156,12 @@ function copy() {
 
 function accept(txt) {
 	changelog.push(original.value);
-	original.value = txt;
+	if(original.selectionStart<original.selectionEnd) {
+		replaceSelectedText(original, txt);
+	} else {
+		// replace the entire text
+		original.value = txt;
+	}
 	for (let i = 0; i < <?php echo NUM_SUGGESTIONS; ?>; i++) {
 		results[i].textContent = '';
 	}
