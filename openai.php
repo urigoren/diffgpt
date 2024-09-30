@@ -82,12 +82,26 @@ function paraphrase_sentence($txt) {
     return $ret;
 }
 
+function duplicate_text($txt) {
+    $ret = array();
+    for ($i = 0; $i < NUM_SUGGESTIONS; $i++) {
+        $ret[] = $txt;
+    }
+    return $ret;
+}
+
 
 $userText = $_POST['txt'];
 $mode = $_POST['mode'] ?? 'email';
 
 try {
-    if ($mode=='email')
+    if (strlen($userText)<MIN_CHARS_FOR_SUGGESTION) {
+        $paraphrasedText = duplicate_text($userText);
+    }
+    elseif (strlen($userText)>MAX_CHARS_FOR_SUGGESTION) {
+        $paraphrasedText = duplicate_text($userText);
+    }
+    elseif ($mode=='email')
     {
         $paraphrasedText = paraphrase_entire_email($userText);
     }
@@ -96,7 +110,7 @@ try {
         $paraphrasedText = paraphrase_sentence($userText);
     }
     else {
-        echo '{"error": "' .$mode.' is an unknown mode"}';    
+        echo '{"error": "' .$mode.' is an unknown mode"}';
     }
     echo json_encode($paraphrasedText);
 } catch (Exception $e) {
