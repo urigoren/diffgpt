@@ -7,7 +7,7 @@ function complete($txt, $prompt) {
     }
 
     $data = [
-        'model' => 'gpt-3.5-turbo',
+        'model' => 'gpt-4o-mini',
         'temperature' => 0.7,
         'n' => NUM_SUGGESTIONS,
         'messages' => [    
