@@ -30,7 +30,7 @@ I can't make it tomorrow, I'm sick. are you available next week?</textarea>
 					<button onclick="paraphrase()" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="CTRL+Enter">Suggest Edits</button>
 					<button onclick="undo()" class="btn btn-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="CTRL+Z">Undo</button>
 					<button onclick="copy()" class="btn btn-info">Copy</button>
-					<button onclick="reset()" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="CTRL+0">Reset</button>
+					<button onclick="reset()" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="CTRL+0">Clear</button>
 				</div>
 			</div>
 		</div>
