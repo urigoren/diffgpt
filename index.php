@@ -27,9 +27,10 @@ I can't make it tomorrow, I'm sick. are you available next week?</textarea>
 		<div class="row my-3">
 			<div class="col-12">
 				<div class="d-flex flex-wrap gap-2">
-					<button onclick="paraphrase()" class="btn btn-primary">Suggest Edits (ctrl+enter)</button>
+					<button onclick="paraphrase()" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="CTRL+Enter">Suggest Edits</button>
+					<button onclick="undo()" class="btn btn-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="CTRL+Z">Undo</button>
 					<button onclick="copy()" class="btn btn-info">Copy</button>
-					<button onclick="reset()" class="btn btn-secondary">Reset</button>
+					<button onclick="reset()" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="CTRL+0">Reset</button>
 				</div>
 			</div>
 		</div>
@@ -136,8 +137,11 @@ function paraphrase() {
 			showDiff(origVal, suggestion[i], results[i]);
 			results[i].appendChild(document.createElement('br'));
 			const acceptButton = document.createElement('button');
-			acceptButton.textContent = 'Accept Change(ctrl+'+(1+i)+')';
-			acceptButton.className = 'btn btn-success';
+			acceptButton.textContent = 'Accept Change';
+			acceptButton.className = 'btn btn-success my-2';
+			acceptButton.setAttribute('data-bs-toggle', 'tooltip');
+			acceptButton.setAttribute('data-bs-placement', 'top');
+			acceptButton.setAttribute('title', 'CTRL+'+(1+i));
 			acceptButton.onclick = () => accept(suggestion[i]);
 			results[i].appendChild(acceptButton);
 		}
@@ -207,5 +211,6 @@ for ($i = 0; $i < NUM_SUGGESTIONS; $i++) {
 ?>
 });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>
