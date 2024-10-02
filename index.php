@@ -5,34 +5,38 @@ require_once 'config.php';
 <html>
 <head>
 	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>DiffGPT</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 	<link rel="stylesheet" href="style.css"/>
 </head>
 <body>
 	<div class="container">
-		<div class="row">
+		<div class="row my-3">
 			<div class="col-12">
 				<h1 class="h1">Code-Review My Email</h1>
 				<p>Write your email below and click "Suggest Edits" to get a few suggestions from our AI.</p>
 			</div>
+		</div>
+		<div class="row my-3">
 			<div class="col-12">
 				<textarea id="original" class="form-control" rows="10">Hi John,
 I can't make it tomorrow, I'm sick. are you available next week?</textarea>
-				<button onclick="paraphrase()" class="btn btn-primary">Suggest Edits (ctrl+enter)</button>
-				<button onclick="copy()" class="btn btn-info">Copy</button>
-				<button onclick="reset()" class="btn btn-secondary">Reset</button>
 			</div>
 		</div>
-		<div class="row">
+		<div class="row my-3">
 			<div class="col-12">
-				&nbsp;
+				<div class="d-flex flex-wrap gap-2">
+					<button onclick="paraphrase()" class="btn btn-primary">Suggest Edits (ctrl+enter)</button>
+					<button onclick="copy()" class="btn btn-info">Copy</button>
+					<button onclick="reset()" class="btn btn-secondary">Reset</button>
+				</div>
 			</div>
 		</div>
-		<div class="row">
+		<div class="row my-3">
 		<?php
 		for ($i = 0; $i < NUM_SUGGESTIONS; $i++) {
-			echo '<div class="col-6"><pre id="result'.$i.'"></pre></div>';
+			echo '<div class="col-sm-12 col-md-6 mb-3"><div class="card"><div class="card-body"><pre id="result'.$i.'"></pre></div></div></div>';
 		}
 		?>
 		</div>
