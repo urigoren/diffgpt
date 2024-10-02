@@ -33,7 +33,7 @@ I can't make it tomorrow, I'm sick. are you available next week?</textarea>
 				</div>
 			</div>
 		</div>
-		<div class="row my-3">
+		<div class="row my-3 d-none" id="resultsRow">
 		<?php
 		for ($i = 0; $i < NUM_SUGGESTIONS; $i++) {
 			echo '<div class="col-sm-12 col-md-6 mb-3"><div class="card"><div class="card-body"><pre id="result'.$i.'"></pre></div></div></div>';
@@ -46,6 +46,7 @@ I can't make it tomorrow, I'm sick. are you available next week?</textarea>
 	<script defer>
 	var original = document.getElementById('original');
 let results = [];
+const resultsRow=document.getElementById("resultsRow");
 <?php
 for ($i = 0; $i < NUM_SUGGESTIONS; $i++) {
 	echo 'results['.$i.'] = document.getElementById("result'.$i.'");';
@@ -138,6 +139,7 @@ function paraphrase() {
 			acceptButton.onclick = () => accept(suggestion[i]);
 			results[i].appendChild(acceptButton);
 		}
+		resultsRow.classList.remove('d-none');
     })
     .catch(error => {
         console.error('Error:', error);
@@ -147,9 +149,7 @@ function paraphrase() {
 function reset() {
 	changelog.push(original.value);
 	original.value = '';
-	for (let i = 0; i < <?php echo NUM_SUGGESTIONS; ?>; i++) {
-		results[i].textContent = '';
-	}
+	resultsRow.classList.add('d-none');
 }
 
 function copy() {
@@ -162,12 +162,9 @@ function accept(txt) {
 	if(original.selectionStart<original.selectionEnd) {
 		replaceSelectedText(original, txt);
 	} else {
-		// replace the entire text
 		original.value = txt;
 	}
-	for (let i = 0; i < <?php echo NUM_SUGGESTIONS; ?>; i++) {
-		results[i].textContent = '';
-	}
+	resultsRow.classList.add('d-none');
 	
 }
 
@@ -176,6 +173,7 @@ function undo() {
 		return;
 	}
 	original.value = changelog.pop();
+	resultsRow.classList.remove('d-none');
 }
 
 let suggestion = [];
