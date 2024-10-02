@@ -40,7 +40,9 @@ I can't make it tomorrow, I'm sick. are you available next week?</textarea>
 		}
 		?>
 		</div>
-
+		<footer>
+		<p class="text-center text-body-secondary">We hope you enjoy this free tool, courtesy of <a href="https://www.argmaxml.com">Argmax</a></p>
+		</footer>
 	</div>
 	<script src="diff.js"></script>
 	<script defer>
