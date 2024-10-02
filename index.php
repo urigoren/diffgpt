@@ -14,8 +14,8 @@ require_once 'config.php';
 	<div class="container">
 		<div class="row my-3">
 			<div class="col-12">
-				<h1 class="h1">Code-Review My Email</h1>
-				<p>Write your email below and click "Suggest Edits" to get a few suggestions from our AI.</p>
+				<h1 class="h1">Diff-GPT</h1>
+				<p>Enter your email below and click “Suggest Edits” to receive AI-powered suggestions, displayed in a user-friendly diff format for easy review.</p>
 			</div>
 		</div>
 		<div class="row my-3">
