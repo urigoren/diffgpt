@@ -114,6 +114,7 @@ function paraphrase() {
 		origVal = origVal.substring(original.selectionStart,original.selectionEnd);
 		formData.append('txt', origVal);
 		formData.append('mode', 'sentence');
+		formData.append('changes', changelog.length);
 	} else {
 		origVal = origVal.replace(
 			/(?<![A-Z][a-z]|\d)([.!?])\s+(?=[A-Z]|["""']|$)/g,
