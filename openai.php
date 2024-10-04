@@ -8,7 +8,7 @@ function complete($txt, $prompt) {
 
     $data = [
         'model' => 'gpt-4o-mini',
-        'temperature' => 0.7,
+        'temperature' => 1.5,
         'n' => NUM_SUGGESTIONS,
         'messages' => [    
             [
@@ -93,26 +93,37 @@ function duplicate_text($txt) {
 
 $userText = $_POST['txt'];
 $mode = $_POST['mode'] ?? 'email';
+$changes = $_POST['changes'] ?? '0';
 
-try {
-    if (strlen($userText)<MIN_CHARS_FOR_SUGGESTION) {
-        $paraphrasedText = duplicate_text($userText);
-    }
-    elseif (strlen($userText)>MAX_CHARS_FOR_SUGGESTION) {
-        $paraphrasedText = duplicate_text($userText);
-    }
-    elseif ($mode=='email')
-    {
-        $paraphrasedText = paraphrase_entire_email($userText);
-    }
-    elseif ($mode=='sentence')
-    {
-        $paraphrasedText = paraphrase_sentence($userText);
-    }
-    else {
-        echo '{"error": "' .$mode.' is an unknown mode"}';
-    }
+if (($changes == '0') && (NUM_SUGGESTIONS==4)) {
+    // no changes on UI, spare the openai api call on first load
+    $paraphrasedText = array(
+        "Hi John,\n\nI'm not feeling well and won't be able to make it tomorrow. Would you be available sometime next week to reschedule? Please let me know what works for you.\n\nBest,\n[Your Name]",
+        "Dear John,\nUnfortunately, I'm feeling unwell and won't be able to attend tomorrow. Could we possibly reschedule for sometime next week? Please let me know your availability.\n\nBest regards,\n[Your Name]",
+        "Dear Mr. [Last Name],\n\nI regret to inform you that I am unwell and will be unable to attend our scheduled meeting tomorrow. Would it be possible to arrange an alternative time next week? Please let me know your availability at your earliest convenience.\n\nSincerely,\n[Your Full Name]",
+        "Hey John,\nI'm not feeling well, so I can't make it tomorrow. Are you free sometime next week?");
     echo json_encode($paraphrasedText);
-} catch (Exception $e) {
-    echo '{"error": "' . $e->getMessage() . '"}';
+} else {
+    try {
+        if (strlen($userText)<MIN_CHARS_FOR_SUGGESTION) {
+            $paraphrasedText = duplicate_text($userText);
+        }
+        elseif (strlen($userText)>MAX_CHARS_FOR_SUGGESTION) {
+            $paraphrasedText = duplicate_text($userText);
+        }
+        elseif ($mode=='email')
+        {
+            $paraphrasedText = paraphrase_entire_email($userText);
+        }
+        elseif ($mode=='sentence')
+        {
+            $paraphrasedText = paraphrase_sentence($userText);
+        }
+        else {
+            echo '{"error": "' .$mode.' is an unknown mode"}';
+        }
+        echo json_encode($paraphrasedText);
+    } catch (Exception $e) {
+        echo '{"error": "' . $e->getMessage() . '"}';
+    }
 }

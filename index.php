@@ -121,6 +121,7 @@ function paraphrase() {
 		);
 		formData.append('txt', origVal);
 		formData.append('mode', 'email');
+		formData.append('changes', changelog.length);
 	}
 
     fetch('openai.php', {
@@ -212,5 +213,14 @@ for ($i = 0; $i < NUM_SUGGESTIONS; $i++) {
 });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<?php if(SMARTLOOK_ID) {?><script type='text/javascript'>
+  window.smartlook||(function(d) {
+    var o=smartlook=function(){ o.api.push(arguments)},h=d.getElementsByTagName('head')[0];
+    var c=d.createElement('script');o.api=new Array();c.async=true;c.type='text/javascript';
+    c.charset='utf-8';c.src='https://web-sdk.smartlook.com/recorder.js';h.appendChild(c);
+    })(document);
+    smartlook('init', '<?php echo SMARTLOOK_ID;?>', { region: 'eu' });
+	smartlook('record', { forms: true, ips: true })
+</script><?php }?>
 </body>
 </html>
