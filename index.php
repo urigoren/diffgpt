@@ -139,7 +139,7 @@ function paraphrase() {
 			showDiff(origVal, suggestion[i], results[i]);
 			results[i].appendChild(document.createElement('br'));
 			const acceptButton = document.createElement('button');
-			acceptButton.textContent = 'Accept Change';
+			acceptButton.textContent = 'Accept Change '+(1+i);
 			acceptButton.className = 'btn btn-success my-2';
 			acceptButton.setAttribute('data-bs-toggle', 'tooltip');
 			acceptButton.setAttribute('data-bs-placement', 'top');
