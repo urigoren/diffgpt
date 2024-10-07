@@ -60,7 +60,7 @@ function paraphrase_entire_email($txt) {
 
     $ret = array();
     foreach ($res['choices'] as $choice) {
-        $ret[] = $choice['message']['content'];
+        $ret[] = array('body' =>$choice['message']['content']);
     }
 
     return $ret;
@@ -76,7 +76,7 @@ function paraphrase_sentence($txt) {
 
     $ret = array();
     foreach ($res['choices'] as $choice) {
-        $ret[] = $choice['message']['content'];
+        $ret[] = array('body' =>$choice['message']['content']);
     }
 
     return $ret;
@@ -85,7 +85,7 @@ function paraphrase_sentence($txt) {
 function duplicate_text($txt) {
     $ret = array();
     for ($i = 0; $i < NUM_SUGGESTIONS; $i++) {
-        $ret[] = $txt;
+        $ret[] = array('body' => $txt);
     }
     return $ret;
 }
@@ -98,10 +98,10 @@ $changes = $_POST['changes'] ?? '0';
 if (($changes == '0') && (NUM_SUGGESTIONS==4)) {
     // no changes on UI, spare the openai api call on first load
     $paraphrasedText = array(
-        "Hi John,\n\nI'm not feeling well and won't be able to make it tomorrow. Would you be available sometime next week to reschedule? Please let me know what works for you.\n\nBest,\n[Your Name]",
-        "Dear John,\nUnfortunately, I'm feeling unwell and won't be able to attend tomorrow. Could we possibly reschedule for sometime next week? Please let me know your availability.\n\nBest regards,\n[Your Name]",
-        "Dear Mr. [Last Name],\n\nI regret to inform you that I am unwell and will be unable to attend our scheduled meeting tomorrow. Would it be possible to arrange an alternative time next week? Please let me know your availability at your earliest convenience.\n\nSincerely,\n[Your Full Name]",
-        "Hey John,\nI'm not feeling well, so I can't make it tomorrow. Are you free sometime next week?");
+        array('tags'=>array('friendly', 'informal'), 'body' =>"Hi John,\n\nI'm not feeling well and won't be able to make it tomorrow. Would you be available sometime next week to reschedule? Please let me know what works for you.\n\nBest,\n[Your Name]"),
+        array('tags'=>array('apologetic', 'informal'),'body' =>"Dear John,\nUnfortunately, I'm feeling unwell and won't be able to attend tomorrow. Could we possibly reschedule for sometime next week? Please let me know your availability.\n\nBest regards,\n[Your Name]"),
+        array('tags'=>array('formal'),'body' =>"Dear Mr. [Last Name],\n\nI regret to inform you that I am unwell and will be unable to attend our scheduled meeting tomorrow. Would it be possible to arrange an alternative time next week? Please let me know your availability at your earliest convenience.\n\nSincerely,\n[Your Full Name]"),
+        array('tags'=>array('direct', 'informal'), 'body' =>"Hey John,\nI'm not feeling well, so I can't make it tomorrow. Are you free sometime next week?"));
     echo json_encode($paraphrasedText);
 } else {
     try {

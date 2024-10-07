@@ -107,57 +107,61 @@ function showDiff(original,modified,result) {
 	result.appendChild(fragment);
 }
 
-function ShowTags(tags, resultCard) {
+function showTags(tags, resultCard) {
+	if (!tags) return;
 	for (let i = 0; i < tags.length; i++) {
 		let bg="bg-secondary";
-		let txt=tags[i];
+		let txt=tags[i].toLowerCase();
 		switch (txt) {
 		case 'apologetic':
 			txt = "Apologetic";
-			bg = "bg-info"
+			bg = "bg-info text-dark";
 			break;
 		case 'urgent':
 			txt = "Urgent";
-			bg = "bg-danger"
+			bg = "bg-danger";
 			break;
 		case 'appreciative':
 			txt = "Appreciative";
-			bg = "bg-info"
+			bg = "bg-info text-dark";
 			break;
 		case 'sympathetic':
 			txt = "Sympathetic";
-			bg = "bg-info"
+			bg = "bg-info text-dark";
 			break;
 		case 'formal':
 			txt = "Formal";
-			bg = "bg-primary"
+			bg = "bg-primary";
 			break;	
 		case 'informal':
 			txt = "Informal";
-			bg = "bg-primary"
+			bg = "bg-primary";
 			break;	
 		case 'friendly':
 			txt = "Friendly";
-			bg = "bg-info"
+			bg = "bg-info text-dark";
 			break;	
 		case 'direct':
 			txt = "Direct";
-			bg = "bg-warning"
+			bg = "bg-warning text-dark";
 			break;
 		case 'persuasive':
 			txt = "Persuasive";
-			bg = "bg-info"
+			bg = "bg-info text-dark";
 			break;
 		case 'diplomatic':
 			txt = "Diplomatic";
-			bg = "bg-info"
-			break;	
+			bg = "bg-info text-dark";
+			break;
+		default:
+			txt = txt[0].toUpperCase()+txt.substring(1);
+			bg = "bg-secondary";
 		}
 		
-		const spanElement = document.createElement('span');
-		spanElement.classList.add('badge', 'rounded-pill', bg);
-		spanElement.textContent = txt;
-		resultCard.appendChild(spanElement);
+		const badgeElement = document.createElement('span');
+		badgeElement.className = 'me-2 float-end badge rounded-pill '+ bg;
+		badgeElement.textContent = txt;
+		resultCard.appendChild(badgeElement);
 	}
 }
 
@@ -186,10 +190,11 @@ function paraphrase() {
     })
     .then(response => response.json())
     .then(data => {
-        suggestion = data.map(x=>x.replace(
+        suggestion = data.map(x=>x.body.replace(
 			/(?<![A-Z][a-z]|\d)([.!?])\s+(?=[A-Z]|["""']|$)/g,
 			"$1\n"
 		));
+		const tags = data.map(x=>x.tags||[]);
 		for (let i = 0; i < suggestion.length; i++) {
 			// clear non textual data from card
 			const resultCard = results[i].parentNode;
@@ -202,12 +207,13 @@ function paraphrase() {
 			// add non textual data from card
 			const acceptButton = document.createElement('button');
 			acceptButton.textContent = 'Accept Change '+(1+i);
-			acceptButton.className = 'btn btn-success my-2';
+			acceptButton.className = 'btn btn-success my-2 me-2';
 			acceptButton.setAttribute('data-bs-toggle', 'tooltip');
 			acceptButton.setAttribute('data-bs-placement', 'top');
 			acceptButton.setAttribute('title', 'CTRL+'+(1+i));
 			acceptButton.onclick = () => accept(suggestion[i]);
 			resultCard.appendChild(acceptButton);
+			showTags(tags[i], resultCard);
 		}
 		resultsRow.classList.remove('d-none');
     })
