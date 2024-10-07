@@ -107,6 +107,61 @@ function showDiff(original,modified,result) {
 	result.appendChild(fragment);
 }
 
+function ShowTags(tags, resultCard) {
+	for (let i = 0; i < tags.length; i++) {
+		let bg="bg-secondary";
+		let txt=tags[i];
+		switch (txt) {
+		case 'apologetic':
+			txt = "Apologetic";
+			bg = "bg-info"
+			break;
+		case 'urgent':
+			txt = "Urgent";
+			bg = "bg-danger"
+			break;
+		case 'appreciative':
+			txt = "Appreciative";
+			bg = "bg-info"
+			break;
+		case 'sympathetic':
+			txt = "Sympathetic";
+			bg = "bg-info"
+			break;
+		case 'formal':
+			txt = "Formal";
+			bg = "bg-primary"
+			break;	
+		case 'informal':
+			txt = "Informal";
+			bg = "bg-primary"
+			break;	
+		case 'friendly':
+			txt = "Friendly";
+			bg = "bg-info"
+			break;	
+		case 'direct':
+			txt = "Direct";
+			bg = "bg-warning"
+			break;
+		case 'persuasive':
+			txt = "Persuasive";
+			bg = "bg-info"
+			break;
+		case 'diplomatic':
+			txt = "Diplomatic";
+			bg = "bg-info"
+			break;	
+		}
+		
+		const spanElement = document.createElement('span');
+		spanElement.classList.add('badge', 'rounded-pill', bg);
+		spanElement.textContent = txt;
+		resultCard.appendChild(spanElement);
+	}
+}
+
+
 function paraphrase() {
     const formData = new FormData();
 	let origVal = original.value;
@@ -136,8 +191,15 @@ function paraphrase() {
 			"$1\n"
 		));
 		for (let i = 0; i < suggestion.length; i++) {
+			// clear non textual data from card
+			const resultCard = results[i].parentNode;
+			Array.from(resultCard.children).forEach((child) => {
+				if (!child.id.includes("result")) {
+					resultCard.removeChild(child);
+				}
+			});
 			showDiff(origVal, suggestion[i], results[i]);
-			results[i].appendChild(document.createElement('br'));
+			// add non textual data from card
 			const acceptButton = document.createElement('button');
 			acceptButton.textContent = 'Accept Change '+(1+i);
 			acceptButton.className = 'btn btn-success my-2';
@@ -145,7 +207,7 @@ function paraphrase() {
 			acceptButton.setAttribute('data-bs-placement', 'top');
 			acceptButton.setAttribute('title', 'CTRL+'+(1+i));
 			acceptButton.onclick = () => accept(suggestion[i]);
-			results[i].appendChild(acceptButton);
+			resultCard.appendChild(acceptButton);
 		}
 		resultsRow.classList.remove('d-none');
     })
@@ -196,7 +258,7 @@ document.getElementById('original').addEventListener('keydown', function(event) 
         event.preventDefault();
         undo();
     }
-    if (event.key === 'Enter' || event.key === 'Delete' || event.key === 'Backspace') {
+    if (event.key === 'Enter' || event.key === 'Delete' || event.key === 'Backspace' || event.key === 'v' || event.key === 'V') {
 		changelog.push(original.value);
     }
     if ((event.ctrlKey || event.metaKey) && event.key === '0') {
