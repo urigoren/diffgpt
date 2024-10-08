@@ -271,7 +271,7 @@ document.getElementById('original').addEventListener('keydown', function(event) 
         event.preventDefault();
         undo();
     }
-    if (event.key === 'Enter' || event.key === 'Delete' || event.key === 'Backspace' || event.key === 'v' || event.key === 'V') {
+    if (event.key === 'Enter' || event.key === 'Delete' || event.key === 'Backspace') {
 		changelog.push(original.value);
     }
     if ((event.ctrlKey || event.metaKey) && event.key === '0') {

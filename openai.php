@@ -102,7 +102,7 @@ function paraphrase_structured_email($txt) {
             ],
             [
                 'role' => 'user',
-                'content' => $prompt.'\n'.$txt."\n\nPlease use the following structure for the paraphrased email, and choose only one or two tags that best describe the tone of the email above\n".$jstruct
+                'content' => $prompt.'\n'.$txt."\n\nPlease use the following structure for the paraphrased email, and choose only one or two tags that best describe the tone of voice as perceived by an American recipient reading the email above.\n".$jstruct
             ]
         ]    
     ];
@@ -169,7 +169,7 @@ $userText = $_POST['txt'];
 $mode = $_POST['mode'] ?? 'email';
 $changes = $_POST['changes'] ?? '0';
 
-if (($changes == '0') && (NUM_SUGGESTIONS==4)) {
+if (($changes == '0') && (NUM_SUGGESTIONS==4) && (strpos($userText, 'John') !== false)) {
     // no changes on UI, spare the openai api call on first load
     $paraphrasedText = array(
         array('tags'=>array('friendly', 'informal'), 'body' =>"Hi John,\n\nI'm not feeling well and won't be able to make it tomorrow. Would you be available sometime next week to reschedule? Please let me know what works for you.\n\nBest,\n[Your Name]"),
