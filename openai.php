@@ -66,6 +66,80 @@ function paraphrase_entire_email($txt) {
     return $ret;
 }
 
+function paraphrase_structured_email($txt) {
+    if (!defined('OPENAI_API_KEY')) {
+        throw new Exception('OPENAI_API_KEY is not defined');
+    }
+    $rstruct=array(
+        "type"=> "json_schema",
+        "json_schema"=> array(
+          "name"=> "email",
+          "schema"=> array(
+            "type"=> "object",
+            "properties"=> array(
+                "subject"=> array( "type"=> "string" ),
+                "body"=> array( "type"=> "string" ),
+                "tags"=> array("type"=> "array", "items"=>array( "type"=> "string" ) )
+                ),
+            "required"=> ["subject", "body", "tags"],
+            "additionalProperties"=> false
+            ),
+          "strict"=> true
+        )
+    );
+
+    $jstruct='{"subject": "The subject of the emails", "body": "The content of the email message", "tags": ["apologetic","urgent","appreciative","sympathetic","formal","informal","friendly","direct","persuasive","diplomatic"]}';
+    $prompt='The following is an email draft about to be sent in a business setting.\nPlease paraphrases this email in a positive, professional and business friendly tone, as an American speaker would write it:';
+    $data = [
+        'model' => 'gpt-4o-mini',
+        'temperature' => 1.5,
+        'n' => NUM_SUGGESTIONS,
+        'response_format'=>$rstruct,
+        'messages' => [    
+            [
+                'role' => 'system',
+                'content' => 'You are a helpful assistant that helps a non-native English speaker to improve their email writing skills. Focus on spelling, grammar and punctuation as well as word choice. Try to keep the same meaning but rephrase the text.'
+            ],
+            [
+                'role' => 'user',
+                'content' => $prompt.'\n'.$txt."\n\nPlease use the following structure for the paraphrased email, and choose only one or two tags that best describe the tone of the email above\n".$jstruct
+            ]
+        ]    
+    ];
+
+    $ch = curl_init('https://api.openai.com/v1/chat/completions');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Authorization: Bearer ' . OPENAI_API_KEY,
+        'Content-Type: application/json'
+    ]);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    
+    $response = curl_exec($ch);
+    
+    if ($response === false) {
+        $error = curl_error($ch);
+        curl_close($ch);
+        throw new Exception('cURL Error: ' . $error);
+    }
+    
+    curl_close($ch);
+    
+    $decodedResponse = json_decode($response, true);
+    
+    if (isset($decodedResponse['error'])) {
+        throw new Exception('API Error: ' . $decodedResponse['error']['message']);
+    }
+
+    $ret = array();
+    foreach ($decodedResponse['choices'] as $choice) {
+        $ret[] = json_decode($choice['message']['content']);
+    }
+
+    return $ret;
+}
+
 function paraphrase_sentence($txt) {
     
     $res = complete($txt, 'Given the following sentence, Please make sure its grammatically correct with no spelling mistakes. Suggest minor edits that preserve the meaning of the sentence but make it more positive and business friendly:');
@@ -113,7 +187,8 @@ if (($changes == '0') && (NUM_SUGGESTIONS==4)) {
         }
         elseif ($mode=='email')
         {
-            $paraphrasedText = paraphrase_entire_email($userText);
+            //$paraphrasedText = paraphrase_entire_email($userText);
+            $paraphrasedText = paraphrase_structured_email($userText);
         }
         elseif ($mode=='sentence')
         {

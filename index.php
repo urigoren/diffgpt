@@ -159,7 +159,7 @@ function showTags(tags, resultCard) {
 		}
 		
 		const badgeElement = document.createElement('span');
-		badgeElement.className = 'me-2 float-end badge rounded-pill '+ bg;
+		badgeElement.className = 'me-2 my-2 float-end badge rounded-pill '+ bg;
 		badgeElement.textContent = txt;
 		resultCard.appendChild(badgeElement);
 	}
@@ -195,6 +195,7 @@ function paraphrase() {
 			"$1\n"
 		));
 		const tags = data.map(x=>x.tags||[]);
+		const subject = data.map(x=>x.subject);
 		for (let i = 0; i < suggestion.length; i++) {
 			// clear non textual data from card
 			const resultCard = results[i].parentNode;
@@ -203,6 +204,12 @@ function paraphrase() {
 					resultCard.removeChild(child);
 				}
 			});
+			if (subject[i]) {
+				const cardTitle = document.createElement('h5');
+				cardTitle.className = "card-title";
+				cardTitle.textContent = subject[i];
+				resultCard.prepend(cardTitle);
+			}
 			showDiff(origVal, suggestion[i], results[i]);
 			// add non textual data from card
 			const acceptButton = document.createElement('button');
