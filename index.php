@@ -27,7 +27,7 @@ I can't make it tomorrow, I'm sick. are you available next week?</textarea>
 		<div class="row my-3">
 			<div class="col-12">
 				<div class="d-flex flex-wrap gap-2">
-					<button onclick="paraphrase()" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="CTRL+Enter">Suggest Edits</button>
+					<button onclick="paraphrase()" class="btn btn-primary" id="suggestButton" data-bs-toggle="tooltip" data-bs-placement="top" title="CTRL+Enter">Suggest Edits</button>
 					<button onclick="undo()" class="btn btn-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="CTRL+Z">Undo</button>
 					<button onclick="copy()" class="btn btn-info">Copy</button>
 					<button onclick="reset()" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="CTRL+0">Clear</button>
@@ -50,6 +50,7 @@ I can't make it tomorrow, I'm sick. are you available next week?</textarea>
 	var original = document.getElementById('original');
 let results = [];
 const resultsRow=document.getElementById("resultsRow");
+const suggestButton = document.getElementById("suggestButton");
 <?php
 for ($i = 0; $i < NUM_SUGGESTIONS; $i++) {
 	echo 'results['.$i.'] = document.getElementById("result'.$i.'");';
@@ -169,6 +170,7 @@ function showTags(tags, resultCard) {
 function paraphrase() {
     const formData = new FormData();
 	let origVal = original.value;
+	suggestButton.disabled = true;
 	if (original.selectionStart<original.selectionEnd) {
 		origVal = origVal.substring(original.selectionStart,original.selectionEnd);
 		formData.append('txt', origVal);
@@ -221,6 +223,7 @@ function paraphrase() {
 			acceptButton.onclick = () => accept(suggestion[i]);
 			resultCard.appendChild(acceptButton);
 			showTags(tags[i], resultCard);
+			suggestButton.disabled = false;
 		}
 		resultsRow.classList.remove('d-none');
     })
@@ -233,6 +236,7 @@ function reset() {
 	changelog.push(original.value);
 	original.value = '';
 	resultsRow.classList.add('d-none');
+	suggestButton.disabled = false;
 }
 
 function copy() {
@@ -248,7 +252,7 @@ function accept(txt) {
 		original.value = txt;
 	}
 	resultsRow.classList.add('d-none');
-	
+	suggestButton.disabled = false;
 }
 
 function undo() {
@@ -257,6 +261,7 @@ function undo() {
 	}
 	original.value = changelog.pop();
 	resultsRow.classList.remove('d-none');
+	suggestButton.disabled = false;
 }
 
 let suggestion = [];
