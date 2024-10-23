@@ -240,8 +240,18 @@ function reset() {
 }
 
 function copy() {
-	original.select();
-	document.execCommand('copy');
+	const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+	const isMobile = /android|iphone|ipad|ipod|opera mini|iemobile|mobile/i.test(userAgent);
+	if (isMobile) {
+		navigator.share({
+		text: original.value
+		})
+		.then(() => console.log('Content shared successfully!'))
+		.catch((error) => console.error('Error sharing:', error));
+	} else {
+		original.select();
+		document.execCommand('copy');
+	}
 }
 
 function accept(txt) {
