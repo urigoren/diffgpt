@@ -47,7 +47,8 @@ I can't make it tomorrow, I'm sick. are you available next week?</textarea>
 	</div>
 	<script src="diff.js"></script>
 	<script defer>
-	var original = document.getElementById('original');
+let original = document.getElementById('original');
+let subject = "";
 let results = [];
 const resultsRow=document.getElementById("resultsRow");
 const suggestButton = document.getElementById("suggestButton");
@@ -220,7 +221,11 @@ function paraphrase() {
 			acceptButton.setAttribute('data-bs-toggle', 'tooltip');
 			acceptButton.setAttribute('data-bs-placement', 'top');
 			acceptButton.setAttribute('title', 'CTRL+'+(1+i));
-			acceptButton.onclick = () => accept(suggestion[i]);
+			if (subject[i]) {
+				acceptButton.onclick = () => accept(suggestion[i], subject[i]);
+			} else {
+				acceptButton.onclick = () => accept(suggestion[i], "");
+			}
 			resultCard.appendChild(acceptButton);
 			showTags(tags[i], resultCard);
 			suggestButton.disabled = false;
@@ -244,6 +249,7 @@ function copy() {
 	const isMobile = /android|iphone|ipad|ipod|opera mini|iemobile|mobile/i.test(userAgent);
 	if (isMobile) {
 		navigator.share({
+		title: subject,
 		text: original.value
 		})
 		.then(() => console.log('Content shared successfully!'))
@@ -254,12 +260,15 @@ function copy() {
 	}
 }
 
-function accept(txt) {
+function accept(txt, sub) {
 	changelog.push(original.value);
 	if(original.selectionStart<original.selectionEnd) {
 		replaceSelectedText(original, txt);
 	} else {
 		original.value = txt;
+	}
+	if (sub) {
+		subject = sub;
 	}
 	resultsRow.classList.add('d-none');
 	suggestButton.disabled = false;
@@ -297,7 +306,7 @@ document.getElementById('original').addEventListener('keydown', function(event) 
 for ($i = 0; $i < NUM_SUGGESTIONS; $i++) {
 	echo "if ((event.ctrlKey || event.metaKey) && event.key === '".(1+$i)."') {";
 	echo "event.preventDefault();";
-	echo "accept(suggestion[$i]);";
+	echo "accept(suggestion[$i],'');";
 	echo "}";
 }
 ?>
